@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Кулінарна Книга</title>
+    <link rel="stylesheet" th:href="@{/style.css(v=15)}">
+</head>
+<body>
+<header class="top-bar">
+    <a th:href="@{/recipes/export}" class="btn">Зберегти</a>
+    
+    <form th:action="@{/recipes/import}" method="post" enctype="multipart/form-data" class="import-form">
+        <label class="btn import-label">
+            Завантажити
+            <input type="file" name="file" accept=".bin" required style="display: none;" onchange="this.form.submit()">
+        </label>
+    </form>
+</header>
+
+<main class="container">
+    <aside class="sidebar">
+        <form th:action="@{/recipes}" method="get" class="search-form">
+            <input th:if="${sort != null and sort != ''}" type="hidden" name="sort" th:value="${sort}">
+            <input th:if="${currentDishType != null and currentDishType != ''}" type="hidden" name="dishType" th:value="${currentDishType}">
+            <input th:if="${currentCuisine != null and currentCuisine != ''}" type="hidden" name="cuisine" th:value="${currentCuisine}">
+            
+            <input type="text" name="search" placeholder="Пошук рецептів..." class="form-control search-input" th:value="${search}">
+            <button type="submit" class="btn search-btn">Шукати</button>
+        </form>
+
+        <div class="sidebar-box">
+            <h3>Сортування</h3>
+            <ul class="sort-list">
+                <li>
+                    <a th:href="@{/recipes(search=${search}, sort='name', dishType=${currentDishType}, cuisine=${currentCuisine})}"
+                       th:style="${sort == 'name' ? 'font-weight: bold; color: var(--primary);' : ''}">за назвою</a>
+                </li>
+                <li>
+                    <a th:href="@{/recipes(search=${search}, sort='time', dishType=${currentDishType}, cuisine=${currentCuisine})}"
+                       th:style="${sort == 'time' ? 'font-weight: bold; color: var(--primary);' : ''}">за часом приготування</a>
+                </li>
+                <li>
+                    <a th:href="@{/recipes(search=${search}, sort='calories', dishType=${currentDishType}, cuisine=${currentCuisine})}"
+                       th:style="${sort == 'calories' ? 'font-weight: bold; color: var(--primary);' : ''}">за калорійністю</a>
+                </li>
+            </ul>
+            <div th:if="${sort != null and sort != ''}">
+                <a class="sort-cancel" th:href="@{/recipes(search=${search}, sort='', dishType=${currentDishType}, cuisine=${currentCuisine})}">Скасувати сортування</a>
+            </div>
+        </div>
+        
+        <div class="sidebar-box">
+            <h3>Фільтр за типом</h3>
+            <ul class="sort-list">
+                <li>
+                    <a th:href="@{/recipes(search=${search}, sort=${sort}, dishType='', cuisine=${currentCuisine})}"
+                       th:style="${currentDishType == null or currentDishType == '' ? 'font-weight: bold; color: var(--primary);' : ''}">Всі типи страв</a>
+                </li>
+                <li th:each="dt : ${allDishTypes}">
+                    <a th:href="@{/recipes(search=${search}, sort=${sort}, dishType=${dt.name()}, cuisine=${currentCuisine})}"
+                       th:style="${currentDishType == dt.name() ? 'font-weight: bold; color: var(--primary);' : ''}"
+                       th:text="${dt.displayName}">Назва типу</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-box">
+            <h3>Фільтр за кухнею</h3>
+            <ul class="sort-list">
+                <li>
+                    <a th:href="@{/recipes(search=${search}, sort=${sort}, dishType=${currentDishType}, cuisine='')}"
+                       th:style="${currentCuisine == null or currentCuisine == '' ? 'font-weight: bold; color: var(--primary);' : ''}">Всі кухні</a>
+                </li>
+                <li th:each="c : ${allCuisines}">
+                    <a th:href="@{/recipes(search=${search}, sort=${sort}, dishType=${currentDishType}, cuisine=${c.name()})}"
+                       th:style="${currentCuisine == c.name() ? 'font-weight: bold; color: var(--primary);' : ''}"
+                       th:text="${c.displayName}">Назва кухні</a>
+                </li>
+            </ul>
+        </div>
+    </aside>
+
+    <section class="content">
+
+        <div class="flex-header">
+            <h1 class="main-title main-title-no-border">Всі рецепти</h1>
+            <a th:href="@{/recipes/add}" title="Додати рецепт" class="add-btn-large">+</a>
+        </div>
+        
+        <div th:if="${recipes.empty}" class="empty-state">
+            <p>Рецептів не знайдено.</p>
+        </div>
+
+        <div class="recipe-grid">
+            <a th:each="recipe : ${recipes}" th:href="@{'/recipes/' + ${recipe.id}}" class="recipe-card">
+                <div class="recipe-img-wrapper">
+                    <img th:if="${recipe.imgReference != null and !recipe.imgReference.isEmpty()}" 
+                         th:src="${recipe.imgReference}" 
+                         alt="Фото рецепту">
+                    <div th:unless="${recipe.imgReference != null and !recipe.imgReference.isEmpty()}" class="recipe-img-placeholder">
+                        Немає фото
+                    </div>
+                </div>
+                <div class="recipe-card-content">
+                    <div class="badge-container">
+                        <span class="badge" th:if="${recipe.dishType != null}" th:text="${recipe.dishType.displayName}"></span>
+                        <span class="badge" th:if="${recipe.cuisineType != null}" th:text="${recipe.cuisineType.displayName}"></span>
+                    </div>
+                    <h3 class="recipe-card-title" th:text="${recipe.name}"></h3>
+                    
+                    <div class="recipe-meta-footer">
+                        <span>Час: <span th:text="${recipe.cookingTime}"></span> хв</span>
+                        <span>Калорії: <span th:text="${recipe.caloriesAmount}"></span> ккал</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
+</main>
+<script th:if="${errorMessage != null}">
+    alert("[[${errorMessage}]]");
+</script>
+</body>
+</html>

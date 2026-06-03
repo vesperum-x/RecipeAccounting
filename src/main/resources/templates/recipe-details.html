@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Перегляд Рецепту</title>
+    <link rel="stylesheet" th:href="@{/style.css(v=15)}">
+</head>
+<body>
+<main class="view-container">
+    <h1 class="main-title" th:text="${recipe.name}">Назва рецепту</h1>
+    
+    <div th:if="${recipe.imgReference != null and !recipe.imgReference.isEmpty()}" class="view-img-wrapper">
+        <img th:src="${recipe.imgReference}" alt="Фото рецепту">
+    </div>
+
+    <div class="view-meta-box">
+        <span>Час: <span th:text="${recipe.cookingTime}"></span> хв</span>
+        <span>Ккал: <span th:text="${recipe.caloriesAmount}"></span></span>
+        <span>Порцій: <span th:text="${recipe.servingsAmount}"></span></span>
+    </div>
+
+    <div class="view-tags">
+        <span th:if="${recipe.dishType != null}" style="margin-right: 20px;"><strong>Тип страви:</strong> <span th:text="${recipe.dishType.displayName}"></span></span>
+        <span th:if="${recipe.cuisineType != null}"><strong>Кухня:</strong> <span th:text="${recipe.cuisineType.displayName}"></span></span>
+    </div>
+
+    <div class="view-section">
+        <h3>Опис:</h3>
+        <p th:text="${recipe.description}"></p>
+    </div>
+
+    <div class="view-section">
+        <h3>Інструкція приготування:</h3>
+        <p class="view-instruction-text" th:text="${recipe.cookingInstruction}"></p>
+    </div>
+
+    <div class="view-actions">
+        <a th:href="@{/recipes}" class="btn">Назад</a>
+        <a th:href="@{'/recipes/edit/' + ${recipe.id}}" class="btn">Редагувати</a>
+        
+        <form th:action="@{'/recipes/delete/' + ${recipe.id}}" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити цей рецепт?');">
+            <button type="submit" class="btn">Видалити</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

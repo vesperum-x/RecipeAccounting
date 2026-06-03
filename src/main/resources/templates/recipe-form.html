@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Додати/Редагувати Рецепт</title>
+    <link rel="stylesheet" th:href="@{/style.css(v=15)}">
+</head>
+<body>
+<main class="form-container">
+    <h1 class="main-title" th:text="${recipeForm.id != null ? 'Редагувати рецепт' : 'Додати рецепт'}">Рецепт</h1>
+
+    <form th:action="@{/recipes/save}" th:object="${recipeForm}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{imgReference}">
+
+        <div class="form-group">
+            <label>Назва рецепту*:</label>
+            <input type="text" class="form-control" th:field="*{name}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Час (хв):</label>
+            <input type="number" class="form-control" th:field="*{cookingTime}" min="0">
+        </div>
+
+        <div class="form-group form-group-row">
+            <div class="form-group-col">
+                <label>Тип страви:</label>
+                <select class="form-control" th:field="*{dishType}">
+                    <option value="">Виберіть тип страви...</option>
+                    <option th:each="dt : ${allDishTypes}" th:value="${dt.name()}" th:text="${dt.displayName}"></option>
+                </select>
+            </div>
+            <div class="form-group-col">
+                <label>Тип кухні:</label>
+                <select class="form-control" th:field="*{cuisineType}">
+                    <option value="">Виберіть тип кухні...</option>
+                    <option th:each="c : ${allCuisines}" th:value="${c.name()}" th:text="${c.displayName}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Ккал:</label>
+            <input type="number" class="form-control" th:field="*{caloriesAmount}" min="0">
+        </div>
+
+        <div class="form-group">
+            <label>Порції:</label>
+            <input type="number" class="form-control" th:field="*{servingsAmount}" min="0">
+        </div>
+        
+        <div class="form-group">
+            <label>Фотографія (завантажити)</label>
+            <div class="file-upload-wrapper">
+                <label class="btn import-label">
+                    Вибрати файл...
+                    <input type="file" id="imageFile" name="imageFile" accept="image/*" style="display: none;" onchange="document.getElementById('formFileName').textContent = this.files[0].name">
+                </label>
+                <span id="formFileName" class="file-name-display">Файл не обрано</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Короткий опис:</label>
+            <textarea class="form-control" th:field="*{description}" rows="3"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Інструкція приготування:</label>
+            <textarea class="form-control" th:field="*{cookingInstruction}" rows="5"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn">Зберегти</button>
+            <a th:href="@{${recipeForm.id != null ? '/recipes/' + recipeForm.id : '/recipes'}}" class="btn">Скасувати</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>
