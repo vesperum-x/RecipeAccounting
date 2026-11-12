@@ -1,7 +1,6 @@
 # Recipe Accounting
 
 A web application for managing a collection of cooking recipes, built with Spring Boot and Thymeleaf.
-University project, 2nd year (spring 2026). The interface is in Ukrainian.
 
 ## Features
 
